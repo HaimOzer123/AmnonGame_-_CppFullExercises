@@ -13,4 +13,11 @@ int main(){
     } else {
         std::cout << "The water is gas" << std::endl;
     }
+
+    bool sunny = true;
+    if (sunny){
+        std::cout << "It is sunny" << std::endl;
+    } else {
+        std::cout << "It is not sunny" << std::endl;
+    }
 }
