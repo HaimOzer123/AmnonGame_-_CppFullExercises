@@ -245,11 +245,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     ShowWindow(hwnd, nCmdShow);
 
-    hAmnon1 = LoadBMPImage("C:\\PIC\\amnon_walk1.bmp");
-    hAmnon2 = LoadBMPImage("C:\\PIC\\amnon_walk2.bmp");
-    hCactus = LoadBMPImage("C:\\PIC\\cactu.bmp");
-    hBone = LoadBMPImage("C:\\PIC\\bone.bmp");
-    hSteak = LoadBMPImage("C:\\PIC\\steak.bmp");
+        hAmnon1 = LoadBMPImage("assets/amnon_walk1.bmp");
+        hAmnon2 = LoadBMPImage("assets/amnon_walk2.bmp");
+        hCactus = LoadBMPImage("assets/cactu.bmp");
+        hBone = LoadBMPImage("assets/bone.bmp");
+        hSteak = LoadBMPImage("assets/steak.bmp");
+
 
     SetTimer(hwnd, 1, 30, NULL);
 
