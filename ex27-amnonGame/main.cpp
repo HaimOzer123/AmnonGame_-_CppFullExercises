@@ -6,13 +6,13 @@
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 400;
 const int GROUND_Y = 300;
-const int INITIAL_JUMP_VELOCITY = -30; // Higher jump
-const int INITIAL_CACTUS_SPEED = 14;    // Slower cactus speed for easier jump
-const int GRAVITY = 1;                  // Balanced descent
+const int INITIAL_JUMP_VELOCITY = -30;
+const int INITIAL_CACTUS_SPEED = 14;
+const int GRAVITY = 1;
 const int BONE_POINTS = 5;
 const int STEAK_POINTS = 10;
-const int ITEM_HEIGHT = 150;            // Height for bone and steak (Amnon needs to jump to collect)
-const int MAX_JUMP_HEIGHT = 200;        // Maximum height Amnon can reach above ground
+const int ITEM_HEIGHT = 150;
+const int MAX_JUMP_HEIGHT = 200;
 
 bool isGameOver = false;
 bool isJumping = false;
@@ -26,6 +26,7 @@ int score = 0;
 int bestScore = 0;
 int frameCounter = 0;
 int speedIncreaseCounter = 0;
+int jumpCount = 0;  // Added for double jump tracking
 
 HBITMAP hAmnon1, hAmnon2, hCactus, hBone, hSteak;
 
@@ -52,6 +53,7 @@ void ResetGame() {
     cactusSpeed = INITIAL_CACTUS_SPEED;
     frameCounter = 0;
     speedIncreaseCounter = 0;
+    jumpCount = 0;
     boneX = -100;
     steakX = -100;
     boneActive = false;
@@ -78,9 +80,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                     isGameStarted = true;
                 } else if (isGameOver) {
                     ResetGame();
-                } else if (!isJumping && !isGameOver) {
+                } else if (jumpCount < 2 && !isGameOver) {  // Allow up to two jumps
                     isJumping = true;
                     jumpVelocity = INITIAL_JUMP_VELOCITY;
+                    jumpCount++;  // Increment jump count
                 }
             }
             break;
@@ -116,8 +119,9 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 SelectObject(hdcMem, hAmnon);
                 BitBlt(hdc, 50, amnonY - 50, 100, 100, hdcMem, 0, 0, SRCCOPY);
 
+                // Draw cactus at 70x70 size
                 SelectObject(hdcMem, hCactus);
-                BitBlt(hdc, cactusX, GROUND_Y - 50, 100, 100, hdcMem, 0, 0, SRCCOPY);
+                BitBlt(hdc, cactusX, GROUND_Y - 20, 70, 70, hdcMem, 0, 0, SRCCOPY);
 
                 if (boneActive) {
                     SelectObject(hdcMem, hBone);
@@ -156,7 +160,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 }
 
                 cactusX -= cactusSpeed;
-                if (cactusX < -100) {
+                if (cactusX < -70) {
                     cactusX = WINDOW_WIDTH;
                 }
 
@@ -186,11 +190,15 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                     if (amnonY >= GROUND_Y) {
                         amnonY = GROUND_Y;
                         isJumping = false;
+                        jumpCount = 0;  // Reset jump count when Amnon hits the ground
                     }
                 }
 
                 RECT amnonRect = { 50, amnonY - 50, 150, amnonY + 50 };
-                RECT cactusRect = { cactusX, GROUND_Y - 50, cactusX + 100, GROUND_Y + 50 };
+                
+                // Adjusted cactus collision rectangle to be smaller    
+                RECT cactusRect = { cactusX, GROUND_Y - 40, cactusX + 40, GROUND_Y };
+                
                 RECT boneRect = { boneX, ITEM_HEIGHT, boneX + 50, ITEM_HEIGHT + 50 };
                 RECT steakRect = { steakX, ITEM_HEIGHT, steakX + 50, ITEM_HEIGHT + 50 };
                 RECT intersection;  
@@ -245,12 +253,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     ShowWindow(hwnd, nCmdShow);
 
-        hAmnon1 = LoadBMPImage("assets/amnon_walk1.bmp");
-        hAmnon2 = LoadBMPImage("assets/amnon_walk2.bmp");
-        hCactus = LoadBMPImage("assets/cactu.bmp");
-        hBone = LoadBMPImage("assets/bone.bmp");
-        hSteak = LoadBMPImage("assets/steak.bmp");
-
+    hAmnon1 = LoadBMPImage("assets/amnon_walk1.bmp");
+    hAmnon2 = LoadBMPImage("assets/amnon_walk2.bmp");
+    hCactus = LoadBMPImage("assets/cactu.bmp");
+    hBone = LoadBMPImage("assets/bone.bmp");
+    hSteak = LoadBMPImage("assets/steak.bmp");
 
     SetTimer(hwnd, 1, 30, NULL);
 
