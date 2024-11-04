@@ -36,4 +36,4 @@ int main () {
     std::cout << students7 << '\n';
 
     return 0;
-    } 
+    }   
